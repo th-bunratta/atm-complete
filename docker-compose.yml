@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+
+  # MySQL database backend
+  atm-web-db:
+    container_name: atm-web-db
+    image: mysql:5.7.22
+    environment:
+      TZ: "Asia/Bangkok"
+      MYSQL_DATABASE: "atm"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/dump:/docker-entrypoint-initdb.d
+      - ./db/mysql-datadir:/var/lib/mysql # Default MySQL data directory
+      - ./db/config/custom.cnf:/etc/mysql/conf.d/custom.cnf # MySQL configuration file
+    restart: unless-stopped
+    networks:
+      - atm-frontend
+
+  # Maven-based frontend of ATM-Web: Assignment 1
+  atm-web-maven:
+    build:
+      context: atm-web/.
+      dockerfile: atm-web/Dockerfile
+    container_name: atm-web-maven
+    image: maven:3.6-jdk-8
+    ports:
+      - "8080:8080"
+    depends_on:
+      - atm-web-db
+    networks:
+      - atm-frontend
+
+networks:
+  atm-frontend:
+    name: atm-frontend
+    driver: bridge
