@@ -1,0 +1,8 @@
+[submodule "atm-web"]
+	path = atm-web
+	url = https://github.com/th-bunratta/atm-web
+	branch = master
+[submodule "bankaccount-api"]
+	path = bankaccount-api
+	url = https://github.com/th-bunratta/bankaccount-api
+	branch = main
