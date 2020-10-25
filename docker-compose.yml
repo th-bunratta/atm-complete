@@ -1,7 +1,6 @@
 version: "3.7"
 services:
-
-  # MySQL database backend
+  # MySQL atm database backend
   atm-web-db:
     container_name: atm-web-db
     image: mysql:5.7.22
@@ -20,20 +19,53 @@ services:
       - atm-frontend
 
   # Maven-based frontend of ATM-Web: Assignment 1
-  atm-web-maven:
+  atm-web:
+    container_name: atm-web
     build:
       context: atm-web/.
-      dockerfile: atm-web/Dockerfile
-    container_name: atm-web-maven
-    image: maven:3.6-jdk-8
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - atm-web-db
+      - bankaccount-api
     networks:
       - atm-frontend
+
+  # MySQL bank database backend
+  atm-bank-db:
+    container_name: atm-bank-db
+    image: mysql:5.7.22
+    environment:
+      TZ: "Asia/Bangkok"
+      MYSQL_DATABASE: "bank"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      - ./bankaccount-api/db/dump:/docker-entrypoint-initdb.d
+      - ./bankaccount-api/db/mysql-datadir:/var/lib/mysql # Default MySQL data directory
+      - ./bankaccount-api/db/config/custom.cnf:/etc/mysql/conf.d/custom.cnf # MySQL configuration file
+    restart: unless-stopped
+    networks:
+      - atm-backend
+
+  # Maven-based backend of 'bankaccount-api': Assignment 2
+  bankaccount-api:
+    container_name: bankaccount-api
+    build:
+      context: bankaccount-api/.
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+    depends_on:
+      - atm-bank-db
+    networks:
+      - atm-frontend
+      - atm-backend
 
 networks:
   atm-frontend:
     name: atm-frontend
+    driver: bridge
+  atm-backend:
+    name: atm-backend
     driver: bridge
