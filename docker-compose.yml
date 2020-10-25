@@ -1,3 +1,6 @@
+# Author's name: Tharathorn Bunrattanasathian
+# Student ID: 6110546011
+
 version: "3.7"
 services:
   # MySQL atm database backend
@@ -18,7 +21,7 @@ services:
     networks:
       - atm-frontend
 
-  # Maven-based frontend of ATM-Web: Assignment 1
+  # Maven-based frontend of ATM-Web: #1
   atm-web:
     container_name: atm-web
     build:
@@ -48,7 +51,7 @@ services:
     networks:
       - atm-backend
 
-  # Maven-based backend of 'bankaccount-api': Assignment 2
+  # Maven-based backend of 'bankaccount-api': #2
   bankaccount-api:
     container_name: bankaccount-api
     build:
